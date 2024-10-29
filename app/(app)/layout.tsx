@@ -18,8 +18,18 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { User } from "@/types"
-import { redirect } from "next/navigation"
+import { redirect, usePathname } from "next/navigation"
 import React from "react"
+
+const generateBreadcrumbs = (pathname: string) => {
+  // Split the pathname and filter out any empty segments
+  const pathSegments = pathname.split("/").filter((segment) => segment)
+
+  return pathSegments.map((segment, index) => ({
+    name: segment.charAt(0).toUpperCase() + segment.slice(1), // Capitalize the first letter
+    path: `/${pathSegments.slice(0, index + 1).join("/")}`, // Construct the full path
+  }))
+}
 
 export default function DashboardLayout({
   children, // will be a page or nested layout
@@ -27,7 +37,8 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const { user, isLoadingUser, isAuthenticated } = useAuth()
-
+  const pathname = usePathname()
+  const breadcrumbs = generateBreadcrumbs(pathname)
   if (isLoadingUser) return <LoadingPage />
   if (!isAuthenticated) {
     return redirect("/login")
@@ -46,13 +57,14 @@ export default function DashboardLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                </BreadcrumbItem>
+                {breadcrumbs.map((breadcrumb, index) => (
+                  <BreadcrumbItem key={index}>
+                    <BreadcrumbLink href={breadcrumb.path}>
+                      {breadcrumb.name}
+                    </BreadcrumbLink>
+                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                  </BreadcrumbItem>
+                ))}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

@@ -18,10 +18,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // Authenticated
             $user = Auth::user();
-            $token = $user->createToken('YourAppName')->plainTextToken;
+            // $token = $user->createToken('YourAppName')->plainTextToken;
 
             return response()->json([
-                'token' => $token,
+                'message' => 'Logged in successfully',
             ], 200);
         }
 
