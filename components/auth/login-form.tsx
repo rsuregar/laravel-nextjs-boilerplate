@@ -1,18 +1,18 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
+import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
@@ -21,47 +21,50 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { useAuth } from '@/hooks/use-auth'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+} from "@/components/ui/form"
+import { useAuth } from "@/hooks/use-auth"
+import { redirect } from "next/navigation"
+import { useState } from "react"
 
 const formSchema = z.object({
   email: z
     .string()
     .email({
-      message: 'Email must be a valid email address',
+      message: "Email must be a valid email address",
     })
     .min(5, {
-      message: 'Email must be at least 5 characters',
+      message: "Email must be at least 5 characters",
     }),
   password: z.string().min(8, {
-    message: 'Password must be at least 8 characters',
+    message: "Password must be at least 8 characters",
   }),
 })
 
 export function LoginFormV2() {
   const { login, isAuthenticated } = useAuth()
-  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+
+  if (isAuthenticated) {
+    redirect("/dashboard")
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   })
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard')
-    }
-  }, [isAuthenticated, router])
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       await login(data)
     } catch (error) {
-      console.error('Login failed', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        alert("An unknown error occurred")
+      }
     }
   }
 
@@ -74,6 +77,11 @@ export function LoginFormV2() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="text-red-600 p-2 border rounded-md mb-2 bg-red-50 border-red-600 text-xs">
+            {error}
+          </div>
+        )}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -118,7 +126,7 @@ export function LoginFormV2() {
           </form>
         </Form>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?{" "}
           <Link href="#" className="underline">
             Sign up
           </Link>
