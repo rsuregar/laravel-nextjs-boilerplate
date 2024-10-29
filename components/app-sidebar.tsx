@@ -28,6 +28,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { User } from "@/types"
+import Link from "next/link"
 
 const data = {
   user: {
@@ -43,8 +44,8 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Profile",
+          url: "/profile",
         },
         {
           title: "Starred",
@@ -171,7 +172,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Command className="size-4" />
                 </div>
@@ -179,7 +180,7 @@ export function AppSidebar({
                   <span className="truncate font-semibold">{companyName}</span>
                   <span className="truncate text-xs">{companyTagline}</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

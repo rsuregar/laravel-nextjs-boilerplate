@@ -20,3 +20,7 @@ export const login = async (credentials: LoginCredentials): Promise<void> => {
 export const logout = (): Promise<void> => api.post("/logout")
 
 export const fetchUser = (): Promise<{ data: User }> => api.get("/api/user")
+
+export const loginWithGoogle = (): void => {
+  window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+}
