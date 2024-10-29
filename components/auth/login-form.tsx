@@ -22,8 +22,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useAuth } from "@/hooks/use-auth"
-import { redirect } from "next/navigation"
-import { useState } from "react"
+import { redirect, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import GoogleLoginButton from "./loginWithGoogle"
 
 const formSchema = z.object({
   email: z
@@ -42,10 +43,19 @@ const formSchema = z.object({
 export function LoginFormV2() {
   const { login, isAuthenticated } = useAuth()
   const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
   if (isAuthenticated) {
     redirect("/dashboard")
   }
+
+  useEffect(() => {
+    if (searchParams.get("error") === "email_domain_not_allowed") {
+      setError(
+        `You are not authorized to log in with this (${searchParams.get("email")}). Not allowed by the domain policy.`
+      )
+    }
+  }, [searchParams])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,7 +89,7 @@ export function LoginFormV2() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="text-red-600 p-2 border rounded-md mb-2 bg-red-50 border-red-600 text-xs">
+          <div className="text-red-600 p-2 border rounded-md mb-2 bg-red-50 border-red-600 text-xs text-center">
             {error}
           </div>
         )}
@@ -126,6 +136,9 @@ export function LoginFormV2() {
             </Button>
           </form>
         </Form>
+        <div className="flex justify-center mt-5">
+          <GoogleLoginButton />
+        </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
           <Link href="#" className="underline">
