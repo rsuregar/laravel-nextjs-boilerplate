@@ -1,5 +1,4 @@
 "use client"
-
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -25,7 +24,6 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { redirect } from "next/navigation"
 import { useState } from "react"
-import { CustomError } from "@/types"
 
 const formSchema = z.object({
   email: z
@@ -60,8 +58,14 @@ export function LoginFormV2() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       await login(data)
-    } catch (error: CustomError | any) {
-      setError(error.response?.data?.message || error.message)
+    } catch (error: unknown) {
+      // Type assertion to an expected structure
+      const customError = error as {
+        response?: { data?: { message?: string } }
+      }
+
+      // Access the message safely
+      setError(customError.response?.data?.message || "An error occurred.")
     }
   }
 
