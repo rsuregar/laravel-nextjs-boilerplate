@@ -47,7 +47,7 @@ return [
     |
     */
 
-    'expiration' => 10080, // 7 days
+    'expiration' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +62,7 @@ return [
     |
     */
 
-    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', 'next_api_token_'),
+    'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
 
     /*
     |--------------------------------------------------------------------------
