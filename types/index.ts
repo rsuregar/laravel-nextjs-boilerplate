@@ -1,4 +1,3 @@
-// types/index.ts
 export interface User {
   id: number
   name: string
@@ -9,4 +8,11 @@ export interface User {
 export interface LoginCredentials {
   email: string
   password: string
+}
+
+export interface CustomError extends Error {
+  response?: {
+    data?: any
+    status?: number
+  }
 }

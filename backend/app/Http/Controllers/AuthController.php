@@ -21,12 +21,11 @@ class AuthController extends Controller
             $token = $user->createToken('YourAppName')->plainTextToken;
 
             return response()->json([
-                'user' => $user,
                 'token' => $token,
-            ]);
+            ], 200);
         }
 
-        return response()->json(['message' => 'Unauthorized'], 401);
+        return response()->json(['message' => 'Failed to login. Check your valid credentials.'], 401);
     }
 
     public function logout(Request $request)

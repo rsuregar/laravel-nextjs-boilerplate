@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { login, logout, fetchUser } from "../lib/api"
-import { User, LoginCredentials } from "../types"
+import { User, LoginCredentials, CustomError } from "../types"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -15,7 +15,7 @@ export function useAuth() {
     isLoading: isLoadingUser,
     isPending: isPendingUser,
     isError: isErrorUser,
-  } = useQuery<{ data: User }, Error>({
+  } = useQuery<{ data: User }, CustomError>({
     queryKey: ["user"],
     queryFn: fetchUser,
     retry: false,
@@ -31,9 +31,9 @@ export function useAuth() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] })
     },
-    onError: (error) => {
-      // console.error("Login errornya:", error?.message)
-      toast.error(error?.message || "Login failed")
+    onError: (error: CustomError) => {
+      loginMutation.reset() // Reset the mutation state
+      toast.error(error?.response?.data?.message || "Login failed")
     },
   })
 
@@ -45,8 +45,8 @@ export function useAuth() {
       router.push("/login") // Redirect to the login page
     },
     onError: (error) => {
-      console.error("Logout error:", error)
-      // Handle error (e.g., display a message)
+      // console.error("Logout error:", error)
+      toast.error(error?.message || "Logout failed")
     },
   })
 
