@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
 import {
@@ -15,16 +15,18 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useAuth } from "@/hooks/use-auth";
-import { useRequireAuth } from "@/hooks/use-require-auth"
+import { useAuth } from "@/hooks/use-auth"
+import { redirect } from "next/navigation"
 import React from "react"
 
 export default function Page() {
-  // Use the require auth hook
-  useRequireAuth();
-  const { user, isLoadingUser } = useAuth();
+  const { user, isLoadingUser, isAuthenticated } = useAuth()
 
-  if (isLoadingUser) return <p>Loading...</p>;
+  if (!isAuthenticated) {
+    return redirect("/login")
+  }
+
+  if (isLoadingUser) return <p>Loading...</p>
   return (
     <SidebarProvider>
       <AppSidebar />

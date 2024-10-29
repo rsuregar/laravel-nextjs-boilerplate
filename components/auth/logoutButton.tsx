@@ -1,7 +1,7 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth"
 
 export default function LogoutButton() {
-  const { logout } = useAuth();
+  const { logout } = useAuth()
 
-  return <button onClick={logout}>Logout</button>;
+  return <button onClick={logout}>Logout</button>
 }
