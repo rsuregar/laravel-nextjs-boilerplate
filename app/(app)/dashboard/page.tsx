@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth";
 import { useRequireAuth } from "@/hooks/use-require-auth"
+import React from "react"
 
 export default function Page() {
   // Use the require auth hook

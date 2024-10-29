@@ -12,6 +12,5 @@ export function useRequireAuth() {
       // If the user is not authenticated, redirect to the login page
       router.push('/login'); // Adjust the path to your login page
     }
-    return () => {};
   }, [isAuthenticated, isLoadingUser, router]);
 }
