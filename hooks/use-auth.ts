@@ -5,8 +5,17 @@ import { login, logout, fetchUser } from "../lib/api"
 import { User, LoginCredentials, CustomError } from "../types"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useEffect } from "react"
 
-export function useAuth() {
+interface IUseAuth {
+  middleware?: "auth" | "guest"
+  redirectIfAuthenticated?: string
+}
+
+export function useAuth({
+  middleware,
+  redirectIfAuthenticated,
+}: IUseAuth = {}) {
   const queryClient = useQueryClient()
   const router = useRouter()
   // Query for fetching user
@@ -14,7 +23,7 @@ export function useAuth() {
     data: user,
     isLoading: isLoadingUser,
     isPending: isPendingUser,
-    isError: isErrorUser,
+    isError: error,
   } = useQuery<{ data: User }, CustomError>({
     queryKey: ["user"],
     queryFn: fetchUser,
@@ -50,15 +59,22 @@ export function useAuth() {
     },
   })
 
-  // Determine authentication status
-  const isAuthenticated = !!user?.data
+  useEffect(() => {
+    if (middleware === "guest" && redirectIfAuthenticated && user) {
+      router.push(redirectIfAuthenticated)
+    }
+
+    if (middleware === "auth" && error) {
+      router.push("/login")
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, error, middleware, redirectIfAuthenticated])
 
   return {
     user: user?.data,
+    isAuthenticated: !!user?.data,
     isLoadingUser,
     isPendingUser,
-    isAuthenticated,
-    isErrorUser,
     login: (credentials: LoginCredentials) =>
       loginMutation.mutateAsync(credentials),
     logout: () => logoutMutation.mutateAsync(),

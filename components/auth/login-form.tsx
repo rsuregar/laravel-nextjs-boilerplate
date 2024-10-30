@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useAuth } from "@/hooks/use-auth"
-import { redirect, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import GoogleLoginButton from "./loginWithGoogle"
 
@@ -41,18 +41,17 @@ const formSchema = z.object({
 })
 
 export function LoginFormV2() {
-  const { login, isAuthenticated } = useAuth()
+  const { login } = useAuth({
+    middleware: "guest",
+    redirectIfAuthenticated: "/dashboard",
+  })
   const [error, setError] = useState<string | null>(null)
   const searchParams = useSearchParams()
-
-  if (isAuthenticated) {
-    redirect("/dashboard")
-  }
 
   useEffect(() => {
     if (searchParams.get("error") === "email_domain_not_allowed") {
       setError(
-        `You are not authorized to log in with this (${searchParams.get("email")}). Not allowed by the domain policy.`
+        `You are not authorized to log in with this (${searchParams.get("email")}) email. Not allowed by the domain policy.`
       )
     }
   }, [searchParams])
